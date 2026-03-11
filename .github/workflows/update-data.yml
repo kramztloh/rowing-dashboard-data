@@ -2,12 +2,14 @@ name: Update Rowing CSV
 
 on:
   schedule:
-    - cron: "0 6 * * *"
+    - cron: "0 1 * * *"
   workflow_dispatch:
 
 jobs:
   update:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: Checkout repo
@@ -15,7 +17,9 @@ jobs:
 
       - name: Download Google Sheet CSV
         run: |
-          curl -L "https://docs.google.com/spreadsheets/d/1b7Zx9cwCDXWkeYhGB91YhoMrtWWd1AiTyEbqYEcgGDI/gviz/tq?tqx=out:csv&sheet=RowingLog" -o rowing_log.csv
+          curl --fail --location --max-time 30 \
+          "https://docs.google.com/spreadsheets/d/1b7Zx9cwCDXWkeYhGB91YhoMrtWWd1AiTyEbqYEcgGDI/gviz/tq?tqx=out:csv&sheet=RowingLog" \
+          -o rowing_log.csv
 
       - name: Commit updated CSV
         run: |
